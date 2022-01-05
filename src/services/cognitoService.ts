@@ -13,6 +13,7 @@ import {
 } from "./userPoolService";
 import fs from "fs";
 import { promisify } from "util";
+import { SchemaAttributesListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
 
 const readdir = promisify(fs.readdir);
 
@@ -306,6 +307,19 @@ export class CognitoServiceImpl implements CognitoService {
     userPool: UserPool
   ): Promise<UserPool> {
     ctx.logger.debug("CognitoServiceImpl.createUserPool");
+
+    const newAttrs = userPool.Schema;
+
+    USER_POOL_AWS_DEFAULTS.SchemaAttributes?.forEach((attr) => {
+      const matchingAttr = newAttrs?.find((obj) => obj.Name === attr.Name);
+
+      if (!matchingAttr) {
+        newAttrs?.push(attr);
+      }
+    });
+
+    userPool.SchemaAttributes = newAttrs;
+
     const service = await this.userPoolServiceFactory.create(
       ctx,
       this.clients,

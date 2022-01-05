@@ -124,6 +124,7 @@ export interface Group {
 // just use the types from the sdk, but make Id required
 export type UserPool = UserPoolType & {
   Id: string;
+  Schema?: SchemaAttributesListType;
 };
 
 export interface UserPoolService {
